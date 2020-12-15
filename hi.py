@@ -15,7 +15,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report,confusion_matrix
 from keras.callbacks import ReduceLROnPlateau
 from sklearn.preprocessing import LabelBinarizer
-
+from keras.callbacks import ModelCheckpoint
 #/Users/mvr/Documents/DSP Project SLD/sign_mnist_test.csv
 
 test_df = pd.read_csv("/Users/mvr/Documents/DSP Project SLD/sign_mnist_test.csv")
@@ -78,7 +78,13 @@ model.compile(optimizer = 'adam' , loss = 'categorical_crossentropy' , metrics =
 model.summary()
 
 
-history = model.fit(datagen.flow(x_train,TrainLabelEnc, batch_size = 128) ,epochs = 5 , validation_data = (x_test, TestLabelEnc))
+
+# define the checkpoint
+filepath = "/Users/mvr/Documents/DSP Project SLD/model.h5"
+checkpoint = ModelCheckpoint(filepath, monitor='loss', verbose=1, save_best_only=True, mode='min')
+#callbacks_list = [checkpoint]
+
+model.fit(datagen.flow(x_train,TrainLabelEnc, batch_size = 128) ,epochs = 5 , validation_data = (x_test, TestLabelEnc),callbacks=checkpoint)
 
 
-print("Accuracy of the model is - " , model.evaluate(x_test,y_test)[1]*100 , "%")
+print("Accuracy of the model is - " , model.evaluate(x_test,TestLabelEnc)[1]*100 , "%")
