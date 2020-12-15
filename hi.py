@@ -5,7 +5,15 @@ import cv2
 import os
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
 
+import keras
+from keras.models import Sequential
+from keras.layers import Dense, Conv2D , MaxPool2D , Flatten , Dropout , BatchNormalization
+from keras.preprocessing.image import ImageDataGenerator
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import classification_report,confusion_matrix
+from keras.callbacks import ReduceLROnPlateau
 from sklearn.preprocessing import LabelBinarizer
 
 #/Users/mvr/Documents/DSP Project SLD/sign_mnist_test.csv
@@ -14,7 +22,8 @@ test_df = pd.read_csv("/Users/mvr/Documents/DSP Project SLD/sign_mnist_test.csv"
 train_df = pd.read_csv("/Users/mvr/Documents/DSP Project SLD/sign_mnist_train.csv")
 trainLabel=train_df['label']
 testLabel=test_df['label']
-
+del train_df['label']
+del test_df['label']
 #NOw encoding the labels 
 labelEncoding = LabelBinarizer()
 TestLabelEnc = labelEncoding.fit_transform(testLabel)
@@ -49,3 +58,27 @@ datagen = ImageDataGenerator(
 
 
 datagen.fit(x_train)
+
+model = Sequential()
+model.add(Conv2D(75 , (3,3) , strides = 1 , padding = 'same' , activation = 'relu' , input_shape = (28,28,1)))
+model.add(BatchNormalization())
+model.add(MaxPool2D((2,2) , strides = 2 , padding = 'same'))
+model.add(Conv2D(50 , (3,3) , strides = 1 , padding = 'same' , activation = 'relu'))
+model.add(Dropout(0.2))
+model.add(BatchNormalization())
+model.add(MaxPool2D((2,2) , strides = 2 , padding = 'same'))
+model.add(Conv2D(25 , (3,3) , strides = 1 , padding = 'same' , activation = 'relu'))
+model.add(BatchNormalization())
+model.add(MaxPool2D((2,2) , strides = 2 , padding = 'same'))
+model.add(Flatten())
+model.add(Dense(units = 512 , activation = 'relu'))
+model.add(Dropout(0.3))
+model.add(Dense(units = 24 , activation = 'softmax'))
+model.compile(optimizer = 'adam' , loss = 'categorical_crossentropy' , metrics = ['accuracy'])
+model.summary()
+
+
+history = model.fit(datagen.flow(x_train,TrainLabelEnc, batch_size = 128) ,epochs = 5 , validation_data = (x_test, TestLabelEnc))
+
+
+print("Accuracy of the model is - " , model.evaluate(x_test,y_test)[1]*100 , "%")
