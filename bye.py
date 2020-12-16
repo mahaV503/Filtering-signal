@@ -66,9 +66,12 @@ while True:
     print("Debug")
     #pred=new_model.predict(img)
 
-
+    label_names=["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z"]
     target_index = np.argmax(predictions[0])
-    cv2.putText(frame, "prediction: {} {:.2f}%".format(label_names[np.argmax(pred[0])], prob*100 ),(10, 40), cv2.FONT_HERSHEY_SIMPLEX, 0.90, (0, 0, 255), 2, cv2.LINE_AA)
+    prob = np.max(predictions[0])
+
+    print(target_index)
+    cv2.putText(frame, "prediction: {} {:.2f}%".format(label_names[np.argmax(predictions[0])], prob*100 ),(10, 40), cv2.FONT_HERSHEY_SIMPLEX, 0.90, (0, 0, 255), 2, cv2.LINE_AA)
     cv2.imshow("Sign Language Detection", frame)
 
     k = cv2.waitKey(1)
