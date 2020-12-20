@@ -35,7 +35,7 @@ filepath = "/Users/mvr/Documents/DSP Project SLD/model.h5"
 
 new_model = load_model(filepath)
 
-#print("Accuracy of the model is - " , new_model.evaluate(x_test,TestLabelEnc)[1]*100 , "%")
+print("Accuracy of the model is - " , new_model.evaluate(x_test,TestLabelEnc)[1]*100 , "%")
 
 cap=cv2.VideoCapture(0)
 box_size=234
@@ -52,12 +52,14 @@ while True:
     #img=img.reshape(1,28,28,1)
     #img=img.astype('float32')
     #img=img/255
+    #image, contours, hierarchy = cv2.findContours(thresh,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
+    print(type(roi))
     #imageTen=tf.convert_to_tensor(np.expand_dims(imageNP,0),dtype=tf.float32)
     #roi = np.array([roi]).astype('float64') / 255.0
     #roii=np.reshape(roi,(1,784))
     #imageT=tf.reshape(1,784)
     print(roi.shape)
-    img = np.mean(roi, axis=2).reshape(-1,28,28,1)
+    img = np.mean(roi, axis=2).reshape(-1,28,28,1)/255.0
     print(img.shape)
     #image = tf.keras.preprocessing.image.load_img(roi, target_size=(28, 28),color_mode='grayscale')
     #input_arr = keras.preprocessing.image.img_to_array(image)
